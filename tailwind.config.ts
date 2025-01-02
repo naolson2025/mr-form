@@ -1,4 +1,7 @@
 import type { Config } from "tailwindcss";
+// @ts-expect-error no type declaration fil is available
+import tailwindcssMotion from "tailwindcss-motion";
+import daisyui from 'daisyui';
 
 export default {
   content: [
@@ -14,5 +17,8 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    daisyui,
+    tailwindcssMotion,
+  ],
 } satisfies Config;
