@@ -1,10 +1,21 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { initializeDatabase } from './db';
 
 export const metadata: Metadata = {
-  title: 'Mr Form',
-  description: 'Learning how to use forms in Next.js',
+  title: 'Super Fun Survey',
+  description: 'How to make an engaging survey',
 };
+
+// Initialize the database outside the component to ensure it runs only once on server startup
+if (typeof window === 'undefined') {
+  // Check if running on the server
+  try {
+    initializeDatabase();
+  } catch (error) {
+    console.error('Database initialization error:', error);
+  }
+}
 
 export default function RootLayout({
   children,
