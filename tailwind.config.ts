@@ -21,4 +21,7 @@ export default {
     daisyui,
     tailwindcssMotion,
   ],
+  daisyui: {
+    themes: ["light", "dark", "retro", "nord", "valentine"],
+  }
 } satisfies Config;
