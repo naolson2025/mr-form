@@ -1,6 +1,7 @@
 import { db } from '@/app/db';
 import QuestionDisplay from '@/components/question-display';
 import { notFound } from 'next/navigation';
+import { randomUUID } from 'crypto';
 
 interface Params {
   surveyId: string;
@@ -8,20 +9,27 @@ interface Params {
 }
 
 export default async function QuestionPage({ params }: { params: Params }) {
-  const questionId = parseInt(params.questionId, 10);
+  // need to await params, its a next.js 15 feature
+  const { questionId } = await params;
+  const parsedQuestionId = parseInt(questionId, 10);
 
-  const question = db.prepare('SELECT * FROM Questions WHERE id = ?').get(questionId) as {
-    id: number;
-    text: string;
-    type: string;
-    options: string | null;
-  } | undefined;
+  const question = db
+    .prepare('SELECT * FROM Questions WHERE id = ?')
+    .get(parsedQuestionId) as
+    | {
+        id: number;
+        text: string;
+        type: string;
+        options: string | null;
+      }
+    | undefined;
 
   if (!question) {
     notFound();
   }
 
   const parsedOptions = question.options ? JSON.parse(question.options) : null;
+  const userId = randomUUID();
 
   return (
     <div className="hero min-h-screen bg-base-200">
@@ -31,7 +39,10 @@ export default async function QuestionPage({ params }: { params: Params }) {
           <p className="py-6">Please Answer the following question</p>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-          <QuestionDisplay question={{ ...question, options: parsedOptions }} />
+          <QuestionDisplay
+            question={{ ...question, options: parsedOptions }}
+            userId={userId}
+          />
         </div>
       </div>
     </div>

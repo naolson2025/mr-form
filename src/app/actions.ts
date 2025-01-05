@@ -1,12 +1,13 @@
 'use server';
 
+import { UUID } from 'crypto';
 import { db } from './db';
 
 type ExistingResponse = {
   id: number;
 }
 
-export async function submitResponse(questionId: number, response: string) {
+export async function submitResponse(questionId: number, response: string, userId: UUID) {
   try {
     const surveyId = db
       .prepare('SELECT survey_id FROM Questions WHERE id = ?')
@@ -17,8 +18,8 @@ export async function submitResponse(questionId: number, response: string) {
 
     // Check if response exists
     const existingResponse = db
-      .prepare('SELECT id FROM Responses WHERE question_id = ?')
-      .get(questionId) as ExistingResponse;
+      .prepare('SELECT id FROM Responses WHERE question_id = ? AND user_id = ?')
+      .get(questionId, userId) as ExistingResponse;
 
     if (existingResponse) {
       db.prepare('UPDATE Responses SET response = ? WHERE id = ?').run(
@@ -27,8 +28,8 @@ export async function submitResponse(questionId: number, response: string) {
       );
     } else {
       db.prepare(
-        'INSERT INTO Responses (question_id, response) VALUES (?, ?)'
-      ).run(questionId, response);
+        'INSERT INTO Responses (question_id, user_id, response) VALUES (?, ?, ?)'
+      ).run(questionId, userId, response);
     }
 
     // Get next question
@@ -43,7 +44,7 @@ export async function submitResponse(questionId: number, response: string) {
         redirectUrl: `/survey/${surveyId.survey_id}/question/${nextQuestion.id}`,
       };
     } else {
-      return { redirectUrl: `/survey/${surveyId.survey_id}/thank-you` };
+      return { redirectUrl: `/survey/thank-you` };
     }
   } catch (error) {
     console.error('Error submitting response:', error);
