@@ -2,23 +2,64 @@
 
 import { db } from './db';
 
-export async function submitSurveyResponse(formData: FormData) {
-  console.log('submitSurveyResponse', formData);
+type ExistingResponse = {
+  id: number;
+}
+
+export async function submitResponse(questionId: number, response: string) {
+  try {
+    const surveyId = db
+      .prepare('SELECT survey_id FROM Questions WHERE id = ?')
+      .get(questionId) as { survey_id: number } | undefined;
+    if (!surveyId) {
+      return { error: 'No survey found for this question' };
+    }
+
+    // Check if response exists
+    const existingResponse = db
+      .prepare('SELECT id FROM Responses WHERE question_id = ?')
+      .get(questionId) as ExistingResponse;
+
+    if (existingResponse) {
+      db.prepare('UPDATE Responses SET response = ? WHERE id = ?').run(
+        response,
+        existingResponse.id
+      );
+    } else {
+      db.prepare(
+        'INSERT INTO Responses (question_id, response) VALUES (?, ?)'
+      ).run(questionId, response);
+    }
+
+    // Get next question
+    const nextQuestion = db
+      .prepare(
+        'SELECT id FROM Questions WHERE survey_id = ? AND "order" > (SELECT "order" FROM Questions WHERE id = ?) ORDER BY "order" LIMIT 1'
+      )
+      .get(surveyId.survey_id, questionId) as { id: number } | undefined;
+
+    if (nextQuestion) {
+      return {
+        redirectUrl: `/survey/${surveyId.survey_id}/question/${nextQuestion.id}`,
+      };
+    } else {
+      return { redirectUrl: `/survey/${surveyId.survey_id}/thank-you` };
+    }
+  } catch (error) {
+    console.error('Error submitting response:', error);
+    return { error: 'Failed to submit response.' };
+  }
 }
 
 type SurveyQuestion = {
   id: number;
-}
+};
 
 export async function startSurvey() {
   try {
-    if (!db) {
-      throw new Error('Database connection is null.');
-    }
-
-    const firstQuestion = await db
+    const firstQuestion = (await db
       .prepare('SELECT id FROM Questions ORDER BY "order" LIMIT 1')
-      .get() as SurveyQuestion;
+      .get()) as SurveyQuestion;
 
     if (!firstQuestion) {
       return { error: 'No questions found in the database.' };

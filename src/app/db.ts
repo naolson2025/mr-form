@@ -2,7 +2,7 @@ import Database, { Database as DatabaseType } from 'better-sqlite3';
 import path from 'path';
 
 const dbPath = path.join(process.cwd(), 'surveys.sqlite'); // Store in project root
-let db: DatabaseType | null = null;
+let db: DatabaseType;
 
 interface QuestionData {
   text: string;
@@ -101,7 +101,6 @@ function initializeDatabase() {
 
     db.transaction(() => {
       initialQuestions.forEach((question, index) => {
-        // @ts-expect-error - db is defined or it will error and get caught
         const questionExists = db
           .prepare('SELECT 1 FROM Questions WHERE text = ?')
           .get(question.text);
