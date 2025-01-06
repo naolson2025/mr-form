@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { randomUUID } from 'crypto';
+import { v4 as uuid } from 'uuid';
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // Check if the cookie is already set
   const cookie = request.cookies.get('session');
-  console.log('cookie:', cookie);
 
   if (!cookie) {
     // Set the cookie if it doesn't exist
-    response.cookies.set('session', randomUUID(), {
+    response.cookies.set('session', uuid(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       path: '/',
@@ -21,3 +20,7 @@ export function middleware(request: NextRequest) {
 
   return response;
 }
+
+export const config = {
+  matcher: '/:path*', // Apply to all paths
+};
