@@ -5,7 +5,6 @@ import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { submitResponse } from '@/app/actions';
 import Form from 'next/form';
-import { UUID } from 'crypto';
 
 interface Question {
   id: number;
@@ -16,25 +15,18 @@ interface Question {
 
 interface Props {
   question: Question;
-  userId: UUID;
 }
 
-export default function QuestionDisplay({ question, userId }: Props) {
+export default function QuestionDisplay({ question }: Props) {
   const router = useRouter();
   const { pending } = useFormStatus();
   const [error, setError] = useState<string | null>(null);
-
-  // get or set userid to localStorage
-  if (!localStorage.getItem('userId')) {
-    localStorage.setItem('userId', userId);
-  }
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
     try {
       const response = formData.get('response') as string;
-      const user = localStorage.getItem('userId') as UUID;
-      const result = await submitResponse(question.id, response, user);
+      const result = await submitResponse(question.id, response);
 
       if (result?.error) {
         setError(result.error);

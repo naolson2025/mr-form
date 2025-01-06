@@ -1,14 +1,16 @@
 'use server';
 
-import { UUID } from 'crypto';
-import { db } from './db';
+import { db } from '../lib/db';
+import { getSessionCookie } from '../lib/cookies';
 
 type ExistingResponse = {
   id: number;
-}
+};
 
-export async function submitResponse(questionId: number, response: string, userId: UUID) {
+export async function submitResponse(questionId: number, response: string) {
   try {
+    const userId = await getSessionCookie();
+
     const surveyId = db
       .prepare('SELECT survey_id FROM Questions WHERE id = ?')
       .get(questionId) as { survey_id: number } | undefined;

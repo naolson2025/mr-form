@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { initializeDatabase } from './db';
+import { initializeDatabase } from '../lib/db';
 
 export const metadata: Metadata = {
   title: 'Super Fun Survey',
@@ -17,7 +17,7 @@ if (typeof window === 'undefined') {
   }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
