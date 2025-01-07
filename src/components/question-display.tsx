@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { submitResponse } from '@/app/actions';
+import { TriangleAlert } from 'lucide-react';
 import Form from 'next/form';
 
 interface Question {
@@ -22,7 +23,8 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
   const router = useRouter();
   const { pending } = useFormStatus();
   const [error, setError] = useState<string | null>(null);
-  const [response, setResponse] = useState<string | undefined>(existingResponse?.response);
+  const [response, setResponse] = useState<string>(existingResponse?.response || '');
+  const [checked, setChecked] = useState<string | null>(existingResponse?.response || null);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -50,6 +52,7 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
 
         {error && (
           <div className="alert alert-error mb-4">
+            <TriangleAlert className="alert-icon" />
             <span>{error}</span>
           </div>
         )}
@@ -66,8 +69,8 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
                     value={option.value}
                     className="radio mr-2"
                     required
-                    checked={response === option.value}
-                    onChange={() => setResponse(option.value)}
+                    checked={checked === option.value}
+                    onChange={() => setChecked(option.value)}
                   />
                   <label htmlFor={option.value}>{option.label}</label>
                 </div>

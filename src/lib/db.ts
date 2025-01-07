@@ -79,8 +79,8 @@ function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS Responses (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           question_id INTEGER NOT NULL,
-          user_id INTEGER,
-          response TEXT,
+          user_id TEXT,
+          response TEXT NOT NULL,
           FOREIGN KEY (question_id) REFERENCES Questions(id)
       );
     `);
