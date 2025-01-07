@@ -15,12 +15,14 @@ interface Question {
 
 interface Props {
   question: Question;
+  existingResponse?: { response: string };
 }
 
-export default function QuestionDisplay({ question }: Props) {
+export default function QuestionDisplay({ question, existingResponse }: Props) {
   const router = useRouter();
   const { pending } = useFormStatus();
   const [error, setError] = useState<string | null>(null);
+  const [response, setResponse] = useState<string | undefined>(existingResponse?.response);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -64,6 +66,8 @@ export default function QuestionDisplay({ question }: Props) {
                     value={option.value}
                     className="radio mr-2"
                     required
+                    checked={response === option.value}
+                    onChange={() => setResponse(option.value)}
                   />
                   <label htmlFor={option.value}>{option.label}</label>
                 </div>
@@ -77,6 +81,8 @@ export default function QuestionDisplay({ question }: Props) {
               name="response"
               placeholder="Your answer"
               className="input input-bordered w-full"
+              value={response}
+              onChange={(e) => setResponse(e.target.value)}
               required
             />
           )}

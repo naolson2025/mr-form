@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import QuestionDisplay from '@/components/question-display';
 import { notFound } from 'next/navigation';
 import SurveyStepper from '@/components/survey-stepper';
+import { getSessionCookie } from '@/lib/cookies';
 
 interface Params {
   surveyId: string;
@@ -13,6 +14,7 @@ export default async function QuestionPage({ params }: { params: Params }) {
   const { questionId, surveyId } = await params;
   const parsedQuestionId = parseInt(questionId, 10);
   const parsedSurveyId = parseInt(surveyId, 10);
+  const userId = await getSessionCookie();
 
   const question = db
     .prepare('SELECT * FROM Questions WHERE id = ?')
@@ -24,6 +26,10 @@ export default async function QuestionPage({ params }: { params: Params }) {
         options: string | null;
       }
     | undefined;
+
+  const existingQuestionResp = db
+    .prepare('SELECT response FROM Responses WHERE user_id = ? AND question_id = ?')
+    .get(userId, parsedQuestionId) as { response: string } | undefined;
 
   if (!question) {
     notFound();
@@ -45,6 +51,7 @@ export default async function QuestionPage({ params }: { params: Params }) {
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
           <QuestionDisplay
             question={{ ...question, options: parsedOptions }}
+            existingResponse={existingQuestionResp}
           />
         </div>
       </div>
