@@ -1,10 +1,6 @@
-// import Link from 'next/link';
 import { db } from '@/lib/db';
 import { getSessionCookie } from '../lib/cookies';
-
-// need the number of questions ✅
-// need the url to determine current question ✅
-// need to know which questions have been answered (diff color)
+import Link from 'next/link';
 
 type SurveyStepperProps = {
   surveyId: number;
@@ -17,19 +13,44 @@ export default async function SurveyStepper(props: SurveyStepperProps) {
     .all(props.surveyId) as { id: number }[];
 
   const userId = await getSessionCookie();
-  // get all the questions that have been answered by the user
+
   const answeredQuestions = db
-    .prepare(
-      'SELECT question_id FROM Responses WHERE user_id = ?'
-    )
+    .prepare('SELECT question_id FROM Responses WHERE user_id = ?')
     .all(userId) as { question_id: number }[];
+
+  const stepperArray = surveyQuestions.map((question) => {
+    if (
+      answeredQuestions.some(
+        (answeredQuestion) => answeredQuestion.question_id === question.id
+      )
+    ) {
+      return { id: question.id, answered: true };
+    } else {
+      return { id: question.id, answered: false };
+    }
+  });
+
+  const getStepClass = (question: { id: number; answered: boolean }) => {
+    if (question.id === props.questionId) {
+      return 'step step-accent';
+    } else if (question.answered) {
+      return 'step step-primary';
+    } else {
+      return 'step';
+    }
+  };
 
   return (
     <ul className="steps">
-      <li className="step step-primary"></li>
-      <li className="step step-primary"></li>
-      <li className="step"></li>
-      <li className="step"></li>
+      {stepperArray.map((question) => {
+        return (
+          <Link
+            href={`/survey/${props.surveyId}/question/${question.id}`}
+            key={question.id}
+            className={getStepClass(question)}
+          ></Link>
+        );
+      })}
     </ul>
   );
 }
