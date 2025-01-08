@@ -40,7 +40,7 @@ export default async function QuestionPage({ params }: { params: Params }) {
 
   return (
     <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col">
+      <div className="hero-content flex-col space-y-4">
         <SurveyStepper
           questionId={parsedQuestionId}
           surveyId={parsedSurveyId}

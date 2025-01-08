@@ -27,14 +27,10 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
   const [response, setResponse] = useState<string>(
     existingResponse?.response || ''
   );
-  const [checked, setChecked] = useState<string | null>(
-    existingResponse?.response || null
-  );
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     setError(null);
     try {
-      const response = formData.get('response') as string;
       const result = await submitResponse(question.id, response);
 
       if (result?.error) {
@@ -52,7 +48,7 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
 
   return (
     <div className="card w-full bg-base-100 shadow-xl">
-      <div className="card-body">
+      <div className="card-body space-y-4">
         <h2 className="card-title">{question.text}</h2>
 
         {error && (
@@ -62,58 +58,57 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
           </div>
         )}
 
-        {question.type === 'multiple-choice-emotion' && question.options && (
-          <MultipleChoiceEmotion
-            question={{ ...question, options: question.options }}
-            existingResponse={existingResponse}
-          />
-        )}
+        <Form action={handleSubmit}>
+          {question.type === 'multiple-choice-emotion' && question.options && (
+            <MultipleChoiceEmotion
+              question={{ ...question, options: question.options }}
+              response={response}
+              setResponse={setResponse}
+            />
+          )}
 
-        {question.type === 'multiple-choice' || question.type === 'text' ? (
-          <Form action={handleSubmit}>
-            {question.type === 'multiple-choice' && question.options && (
-              <div className="form-control">
-                {question.options.map((option) => (
-                  <div className="flex items-center mb-2" key={option.value}>
-                    <input
-                      type="radio"
-                      id={option.value}
-                      name="response"
-                      value={option.value}
-                      className="radio mr-2"
-                      required
-                      checked={checked === option.value}
-                      onChange={() => setChecked(option.value)}
-                    />
-                    <label htmlFor={option.value}>{option.label}</label>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {question.type === 'text' && (
-              <input
-                type="text"
-                name="response"
-                placeholder="Your answer"
-                className="input input-bordered w-full"
-                value={response}
-                onChange={(e) => setResponse(e.target.value)}
-                required
-              />
-            )}
-
-            <div className="card-actions justify-end mt-4">
-              <button
-                type="submit"
-                className={`btn btn-primary ${pending ? 'loading' : ''}`}
-                disabled={pending}
-              >
-                Next
-              </button>
+          {question.type === 'multiple-choice' && question.options && (
+            <div className="form-control">
+              {question.options.map((option) => (
+                <div className="flex items-center mb-2" key={option.value}>
+                  <input
+                    type="radio"
+                    id={option.value}
+                    name="response"
+                    value={option.value}
+                    className="radio mr-2"
+                    required
+                    checked={response === option.value}
+                    onChange={() => setResponse(option.value)}
+                  />
+                  <label htmlFor={option.value}>{option.label}</label>
+                </div>
+              ))}
             </div>
-          </Form>
-        ) : null}
+          )}
+
+          {question.type === 'text' && (
+            <input
+              type="text"
+              name="response"
+              placeholder="Your answer"
+              className="input input-bordered w-full"
+              value={response}
+              onChange={(e) => setResponse(e.target.value)}
+              required
+            />
+          )}
+
+          <div className="card-actions justify-end mt-4">
+            <button
+              type="submit"
+              className={`btn btn-primary ${pending ? 'loading' : ''}`}
+              disabled={pending}
+            >
+              Next
+            </button>
+          </div>
+        </Form>
       </div>
     </div>
   );
