@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { submitResponse } from '@/app/actions';
 import { TriangleAlert } from 'lucide-react';
@@ -22,7 +21,7 @@ interface Props {
 
 export default function QuestionDisplay({ question, existingResponse }: Props) {
   const router = useRouter();
-  const { pending } = useFormStatus();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<string>(
     existingResponse?.response || ''
@@ -32,6 +31,7 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
     setError(null);
     try {
       const result = await submitResponse(question.id, response);
+      setLoading(false);
 
       if (result?.error) {
         setError(result.error);
@@ -42,6 +42,7 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
       }
     } catch (err) {
       console.error('Error submitting response:', err);
+      setLoading(false);
       setError('Failed to submit response. Please try again later.');
     }
   };
@@ -52,8 +53,8 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
         <h2 className="card-title">{question.text}</h2>
 
         {error && (
-          <div className="alert alert-error mb-4">
-            <TriangleAlert className="alert-icon" />
+          <div role="alert" className="alert alert-error flex">
+            <TriangleAlert />
             <span>{error}</span>
           </div>
         )}
@@ -102,8 +103,9 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
           <div className="card-actions justify-end mt-4">
             <button
               type="submit"
-              className={`btn btn-primary ${pending ? 'loading' : ''}`}
-              disabled={pending}
+              className={`btn btn-primary ${loading ? 'loading text-accent' : ''}`}
+              disabled={!response}
+              onClick={() => setLoading(true)}
             >
               Next
             </button>

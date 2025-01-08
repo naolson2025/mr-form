@@ -37,7 +37,7 @@ export default function MultipleChoiceEmotion(
               response === option.value && "btn-primary",
             ])}
           >
-            <span className="text-xl">{option.label}</span>
+            <span className="text-2xl">{option.label}</span>
           </label>
         </div>
       ))}
