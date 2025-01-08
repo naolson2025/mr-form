@@ -1,7 +1,7 @@
 'use server';
 
-import { db } from '../lib/db';
 import { getSessionCookie } from '../lib/cookies';
+import { getDbConnection } from '../lib/db';
 
 type ExistingResponse = {
   id: number;
@@ -9,6 +9,7 @@ type ExistingResponse = {
 
 export async function submitResponse(questionId: number, response: string) {
   try {
+    const db = await getDbConnection();
     const userId = await getSessionCookie();
 
     const surveyId = db
@@ -60,6 +61,7 @@ type SurveyQuestion = {
 
 export async function startSurvey() {
   try {
+    const db = await getDbConnection();
     const firstQuestion = (await db
       .prepare('SELECT id FROM Questions ORDER BY "order" LIMIT 1')
       .get()) as SurveyQuestion;

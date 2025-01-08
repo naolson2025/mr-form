@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { getDbConnection } from '@/lib/db';
 import QuestionDisplay from '@/components/question-display';
 import { notFound } from 'next/navigation';
 import SurveyStepper from '@/components/survey-stepper';
@@ -10,6 +10,7 @@ interface Params {
 }
 
 export default async function QuestionPage({ params }: { params: Params }) {
+  const db = await getDbConnection();
   // need to await params, its a next.js 15 feature
   const { questionId, surveyId } = await params;
   const parsedQuestionId = parseInt(questionId, 10);

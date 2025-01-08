@@ -1,6 +1,6 @@
-import { db } from '@/lib/db';
 import { getSessionCookie } from '../lib/cookies';
 import Link from 'next/link';
+import { getDbConnection } from '../lib/db';
 
 type SurveyStepperProps = {
   surveyId: number;
@@ -8,6 +8,8 @@ type SurveyStepperProps = {
 };
 
 export default async function SurveyStepper(props: SurveyStepperProps) {
+  const db = await getDbConnection();
+
   const surveyQuestions = db
     .prepare('SELECT id FROM Questions WHERE survey_id = ?')
     .all(props.surveyId) as { id: number }[];
