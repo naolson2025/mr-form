@@ -47,6 +47,17 @@ const initialQuestions: QuestionData[] = [
       { value: 'extremely_painful', label: 'Extremely Painful' },
     ],
   },
+  {
+    text: 'How would you rate the battery life of the banana smartphone?',
+    type: 'multiple-choice-emotion',
+    options: [
+      { value: '1', label: '😡' },
+      { value: '2', label: '😠' },
+      { value: '3', label: '😐' },
+      { value: '4', label: '😊' },
+      { value: '5', label: '😍' },
+    ],
+  }
 ];
 
 let db: DatabaseType;
