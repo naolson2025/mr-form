@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 type MultipleChoiceEmotionProps = {
   question: {
@@ -32,13 +32,21 @@ export default function MultipleChoiceEmotion(
           />
           <label
             htmlFor={option.value}
-            className={cn([
-              "btn",
-              response === option.value && "btn-primary",
-            ])}
+            className={cn(['btn', response === option.value && 'btn-primary'])}
           >
             <span className="text-2xl">{option.label}</span>
           </label>
+          {option.value === '1' && (
+            <div className={cn([
+              "text-4xl",
+              "motion-preset-slide-down",
+              "motion-translate-y-out-100",
+              "motion-duration-500",
+              "motion-ease-bounce"
+            ])}>
+              💩
+            </div>
+          )}
         </div>
       ))}
     </div>
