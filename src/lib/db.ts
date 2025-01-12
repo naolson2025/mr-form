@@ -3,52 +3,46 @@ import path from 'path';
 
 const dbPath = path.join(process.cwd(), 'surveys.sqlite'); // Store in project root
 
+export interface MultipleChoiceOptions {
+  value: string;
+  label: string;
+}
+
+export interface RangeOptions {
+  min: number;
+  max: number;
+  step: number;
+}
+
 interface QuestionData {
   text: string;
   type: string;
-  options?: { value: string; label: string }[];
+  options: MultipleChoiceOptions[] | RangeOptions;
 }
 
 const initialQuestions: QuestionData[] = [
   {
-    text: 'How likely are you to throw our product directly in the trash?',
+    text: 'How would you rate the durability of your banana smartphone?',
     type: 'multiple-choice',
     options: [
-      { value: 'never', label: 'Never' },
-      { value: 'unlikely', label: 'Unlikely' },
-      { value: 'indifferent', label: 'Indifferent' },
-      { value: 'probably', label: 'Probably' },
-      { value: 'already_in_trash', label: "It's already in the trash" },
-    ],
-  },
-  {
-    text: 'How would you feel if you found out Banana smartphone company was using slave labor overseas?',
-    type: 'multiple-choice',
-    options: [
-      { value: 'angry', label: 'Angry' },
-      { value: 'happy', label: 'Happy' },
-      { value: 'sad', label: 'Sad' },
-      { value: 'confused', label: 'Confused' },
-      { value: 'emotionless', label: 'Emotionless' },
-    ],
-  },
-  {
-    text: 'If you could add one feature to the banana smartphone what would it be?',
-    type: 'text',
-  },
-  {
-    text: 'How was your experience setting up your banana smartphone?',
-    type: 'multiple-choice',
-    options: [
-      { value: 'very_easy', label: 'Very Easy' },
-      { value: 'easy', label: 'Easy' },
-      { value: 'normal', label: 'Normal' },
-      { value: 'hard', label: 'Hard' },
-      { value: 'extremely_painful', label: 'Extremely Painful' },
+      { value: '1', label: 'Mush' },
+      { value: '2', label: 'Bruised' },
+      { value: '3', label: 'Ripe' },
+      { value: '4', label: 'Green' },
+      { value: '5', label: "GMO Super Banana" },
     ],
   },
   {
     text: 'How would you rate the battery life of the banana smartphone?',
+    type: 'range',
+    options: {
+      min: 1,
+      max: 5,
+      step: 1,
+    },
+  },
+  {
+    text: 'How was the setup process for your banana smartphone?',
     type: 'multiple-choice-emotion',
     options: [
       { value: '1', label: '😡' },

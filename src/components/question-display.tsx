@@ -6,12 +6,14 @@ import { submitResponse } from '@/app/actions';
 import { TriangleAlert } from 'lucide-react';
 import Form from 'next/form';
 import MultipleChoiceEmotion from './multiple-choice-emotion';
+import Range from './range';
+import { MultipleChoiceOptions, RangeOptions } from '../lib/db';
 
 interface Question {
   id: number;
   text: string;
   type: string;
-  options: { value: string; label: string }[] | null;
+  options: MultipleChoiceOptions[] | RangeOptions;
 }
 
 interface Props {
@@ -60,50 +62,50 @@ export default function QuestionDisplay({ question, existingResponse }: Props) {
         )}
 
         <Form action={handleSubmit}>
-          {question.type === 'multiple-choice-emotion' && question.options && (
-            <MultipleChoiceEmotion
-              question={{ ...question, options: question.options }}
+          {question.type === 'multiple-choice-emotion' &&
+            Array.isArray(question.options) && (
+              <MultipleChoiceEmotion
+                question={{ ...question, options: question.options }}
+                response={response}
+                setResponse={setResponse}
+              />
+            )}
+
+          {question.type === 'multiple-choice' &&
+            Array.isArray(question.options) && (
+              <div className="form-control">
+                {question.options.map((option) => (
+                  <div className="flex items-center mb-2" key={option.value}>
+                    <input
+                      type="radio"
+                      id={option.value}
+                      name="response"
+                      value={option.value}
+                      className="radio mr-2"
+                      required
+                      checked={response === option.value}
+                      onChange={() => setResponse(option.value)}
+                    />
+                    <label htmlFor={option.value}>{option.label}</label>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          {question.type === 'range' && !Array.isArray(question.options) && (
+            <Range
+              options={question.options}
               response={response}
               setResponse={setResponse}
-            />
-          )}
-
-          {question.type === 'multiple-choice' && question.options && (
-            <div className="form-control">
-              {question.options.map((option) => (
-                <div className="flex items-center mb-2" key={option.value}>
-                  <input
-                    type="radio"
-                    id={option.value}
-                    name="response"
-                    value={option.value}
-                    className="radio mr-2"
-                    required
-                    checked={response === option.value}
-                    onChange={() => setResponse(option.value)}
-                  />
-                  <label htmlFor={option.value}>{option.label}</label>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {question.type === 'text' && (
-            <input
-              type="text"
-              name="response"
-              placeholder="Your answer"
-              className="input input-bordered w-full"
-              value={response}
-              onChange={(e) => setResponse(e.target.value)}
-              required
             />
           )}
 
           <div className="card-actions justify-end mt-4">
             <button
               type="submit"
-              className={`btn btn-primary ${loading ? 'loading text-accent' : ''}`}
+              className={`btn btn-primary ${
+                loading ? 'loading text-accent' : ''
+              }`}
               disabled={!response}
               onClick={() => setLoading(true)}
             >
