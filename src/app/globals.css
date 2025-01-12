@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.coin-animation {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 40px; /* Adjust based on your button's height */
+  font-size: 2rem;
+  animation: jump 1s ease-out forwards;
+  pointer-events: none; /* Prevent interaction with the coin */
+}
+
+@keyframes jump {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-250px); /* Height of the jump */
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0; /* Fade out at the end */
+  }
+}
