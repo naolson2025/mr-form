@@ -13,7 +13,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="valentine">
-      <body>{children}</body>
+      <body>
+        {children}
+      </body>
     </html>
   );
 }

@@ -6,7 +6,7 @@ import { startSurvey } from '@/app/actions';
 import { useFormStatus } from 'react-dom';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Banana, DollarSign } from 'lucide-react';
 
 export default function SurveyLandingContent() {
   const router = useRouter();
@@ -32,10 +32,13 @@ export default function SurveyLandingContent() {
 
   return (
     <div className="max-w-md">
-      <h1 className="text-5xl font-bold">Welcome to the Survey!</h1>
+      <div className='pb-6 text-left'>
+        <Banana className="stroke-current text-yellow-500 h-8 w-8 inline mr-2" />
+        Banana Smartphones LLC
+      </div>
+      <h1 className="text-5xl font-bold">Customer Feedback Survey</h1>
       <p className="py-6">
-        Thank you for taking the time to provide us with your valuable feedback.
-        Your input helps us improve our products and services.
+        Help us make more <DollarSign className='inline text-green-600' /> off of you.
       </p>
       {error && (
         <div className="alert alert-error mb-4">
