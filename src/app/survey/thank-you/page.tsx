@@ -1,6 +1,6 @@
 'use client';
 
-import { Bitcoin, Coins } from 'lucide-react';
+import { Bitcoin } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
