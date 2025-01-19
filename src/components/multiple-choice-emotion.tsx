@@ -19,7 +19,7 @@ export default function MultipleChoiceEmotion(
   return (
     <div className="flex flex-row justify-around">
       {question.options.map((option) => (
-        <div className="flexitems-center mb-2" key={option.value}>
+        <div className="flex items-center mb-2" key={option.value}>
           <input
             type="radio"
             id={option.value}
@@ -32,7 +32,7 @@ export default function MultipleChoiceEmotion(
           />
           <label
             htmlFor={option.value}
-            className={cn(['btn', response === option.value && 'btn-primary'])}
+            className={cn(['btn px-3', response === option.value && 'btn-primary'])}
           >
             <span className="text-2xl">{option.label}</span>
           </label>
